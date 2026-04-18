@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sport Values Card Sort</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #132033;
+      --muted: #5b6777;
+      --border: #d8e0ea;
+      --accent: #163a63;
+      --accent-2: #245a94;
+      --green: #dff4e8;
+      --green-border: #86c7a0;
+      --yellow: #fff3d6;
+      --yellow-border: #e0bd69;
+      --gray: #eef2f6;
+      --gray-border: #c7d1dc;
+      --top5: #e7efff;
+      --top5-border: #89a9e6;
+      --danger: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border-radius: 18px;
+      padding: 24px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 850px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .reset-btn {
+      background: white;
+      color: var(--danger);
+      border: 2px solid #f0c7c3;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .reset-btn:hover {
+      background: #fff5f4;
+    }
+
+    .counts {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    .count-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .count-card .label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .count-card .number {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .column {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 280px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .column.unsorted {
+      background: #f8fbff;
+    }
+
+    .column.very {
+      background: var(--green);
+      border-color: var(--green-border);
+    }
+
+    .column.important {
+      background: var(--yellow);
+      border-color: var(--yellow-border);
+    }
+
+    .column.less {
+      background: var(--gray);
+      border-color: var(--gray-border);
+    }
+
+    .column h2 {
+      margin: 0 0 4px;
+      font-size: 1.2rem;
+    }
+
+    .column p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .value-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .value-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0 0 12px;
+      text-align: center;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .action-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-unsorted { background: #60758a; }
+    .btn-very { background: #2f8f57; }
+    .btn-important { background: #c58a13; }
+    .btn-less { background: #7c8794; }
+
+    .top5-section {
+      margin-top: 22px;
+      background: white;
+      border: 1px solid var(--top5-border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .top5-section h2 {
+      margin: 0 0 6px;
+    }
+
+    .top5-section p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .top5-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .top5-slot {
+      background: var(--top5);
+      border: 2px dashed var(--top5-border);
+      border-radius: 14px;
+      min-height: 70px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .top5-slot.empty {
+      color: #6f84a8;
+      font-weight: 600;
+    }
+
+    .very-values-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    .picker-btn {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .picker-btn.selected {
+      background: #d9e7ff;
+      border-color: #7ea2e8;
+      color: #163a63;
+    }
+
+    .reflection {
+      margin-top: 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      color: var(--text);
+    }
+
+    .reflection strong {
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 980px) {
+      .board {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .top5-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .counts {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+
+      .board {
+        grid-template-columns: 1fr;
+      }
+
+      .top5-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 14px 12px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Sport Values Card Sort</h1>
+      <p>
+        Choose what matters most. Sort each value into Very Important, Important,
+        or Less Important. Then pick your Top 5 from the Very Important group.
+      </p>
+    </section>
+
+    <div class="topbar">
+      <button class="reset-btn" id="resetBtn">Reset All</button>
+
+      <div class="counts">
+        <div class="count-card">
+          <span class="label">Unsorted</span>
+          <span class="number" id="count-unsorted">0</span>
+        </div>
+        <div class="count-card">
+          <span class="label">Very Important</span>
+          <span class="number" id="count-very">0</span>
+        </div>
+        <div class="count-card">
+          <span class="label">Important</span>
+          <span class="number" id="count-important">0</span>
+        </div>
+        <div class="count-card">
+          <span class="label">Less Important</span>
+          <span class="number" id="count-less">0</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="board">
+      <div class="column unsorted">
+        <h2>Unsorted Values</h2>
+        <p>Tap a button on each card to sort it. This mobile version uses large buttons instead of drag-and-drop.</p>
+        <div class="card-list" id="unsortedList"></div>
+      </div>
+
+      <div class="column very">
+        <h2>Very Important</h2>
+        <p>When a value is here, you can add it to your Top 5.</p>
+        <div class="card-list" id="veryList"></div>
+      </div>
+
+      <div class="column important">
+        <h2>Important</h2>
+        <p>These matter, but they are not at the center of your list.</p>
+        <div class="card-list" id="importantList"></div>
+      </div>
+
+      <div class="column less">
+        <h2>Less Important</h2>
+        <p>Good values, just not your biggest priorities right now.</p>
+        <div class="card-list" id="lessList"></div>
+      </div>
+    </section>
+
+    <section class="top5-section">
+      <h2>Top 5 Values</h2>
+      <p>Build your final five from the Very Important group.</p>
+
+      <div class="top5-grid" id="top5Grid"></div>
+
+      <div class="very-values-picker" id="top5Picker"></div>
+    </section>
+
+    <section class="reflection">
+      <strong>Reflection:</strong>
+      Which of your daily actions match these values? Where are you living in alignment, and where could you make a stronger choice this week?
+    </section>
+  </div>
+
+  <script>
+    const valueTitles = [
+      "Effort",
+      "Teamwork",
+      "Composure",
+      "Commitment",
+      "Coachability",
+      "Discipline",
+      "Resilience",
+      "Preparation",
+      "Routines",
+      "Confidence",
+      "Present",
+      "Accountability",
+      "Consistency",
+      "Leadership",
+      "Competitive Fire",
+      "Unselfishness",
+      "Growth",
+      "Gratitude",
+      "Focus",
+      "Faith"
+    ];
+
+    const STORAGE_KEY = "sport-values-card-sort-v2";
+
+    let values = [];
+    let top5 = [null, null, null, null, null];
+
+    function buildInitialState() {
+      values = valueTitles.map((title, index) => ({
+        id: index + 1,
+        title,
+        bucket: "unsorted"
+      }));
+      top5 = [null, null, null, null, null];
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, top5 }));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        buildInitialState();
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(saved);
+        if (!parsed.values || !Array.isArray(parsed.values)) {
+          buildInitialState();
+          return;
+        }
+        values = parsed.values;
+        top5 = Array.isArray(parsed.top5) && parsed.top5.length === 5
+          ? parsed.top5
+          : [null, null, null, null, null];
+      } catch {
+        buildInitialState();
+      }
+    }
+
+    function moveValue(id, bucket) {
+      const item = values.find(v => v.id === id);
+      if (!item) return;
+
+      item.bucket = bucket;
+
+      if (bucket !== "very") {
+        top5 = top5.map(selectedId => selectedId === id ? null : selectedId);
+      }
+
+      saveState();
+      render();
+    }
+
+    function toggleTop5(id) {
+      const item = values.find(v => v.id === id);
+      if (!item || item.bucket !== "very") return;
+
+      const existingIndex = top5.indexOf(id);
+      if (existingIndex !== -1) {
+        top5[existingIndex] = null;
+        saveState();
+        render();
+        return;
+      }
+
+      const emptyIndex = top5.indexOf(null);
+      if (emptyIndex === -1) {
+        alert("You already have 5 values selected.");
+        return;
+      }
+
+      top5[emptyIndex] = id;
+      saveState();
+      render();
+    }
+
+    function clearTop5Slot(index) {
+      top5[index] = null;
+      saveState();
+      render();
+    }
+
+    function resetAll() {
+      buildInitialState();
+      saveState();
+      render();
+    }
+
+    function getBucketValues(bucket) {
+      return values
+        .filter(v => v.bucket === bucket)
+        .sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    function createCard(item) {
+      const card = document.createElement("div");
+      card.className = "value-card";
+
+      const title = document.createElement("div");
+      title.className = "value-title";
+      title.textContent = item.title;
+      card.appendChild(title);
+
+      const actions = document.createElement("div");
+      actions.className = "action-grid";
+
+      const buttons = [
+        { label: "Unsorted", bucket: "unsorted", className: "btn-unsorted" },
+        { label: "Very Important", bucket: "very", className: "btn-very" },
+        { label: "Important", bucket: "important", className: "btn-important" },
+        { label: "Less Important", bucket: "less", className: "btn-less" }
+      ];
+
+      buttons.forEach(btn => {
+        const button = document.createElement("button");
+        button.className = `action-btn ${btn.className}`;
+        button.textContent = btn.label;
+        button.disabled = item.bucket === btn.bucket;
+        button.style.opacity = item.bucket === btn.bucket ? "0.55" : "1";
+        button.addEventListener("click", () => moveValue(item.id, btn.bucket));
+        actions.appendChild(button);
+      });
+
+      card.appendChild(actions);
+      return card;
+    }
+
+    function renderColumn(listId, bucket) {
+      const container = document.getElementById(listId);
+      container.innerHTML = "";
+      const items = getBucketValues(bucket);
+
+      items.forEach(item => {
+        container.appendChild(createCard(item));
+      });
+    }
+
+    function renderCounts() {
+      document.getElementById("count-unsorted").textContent = getBucketValues("unsorted").length;
+      document.getElementById("count-very").textContent = getBucketValues("very").length;
+      document.getElementById("count-important").textContent = getBucketValues("important").length;
+      document.getElementById("count-less").textContent = getBucketValues("less").length;
+    }
+
+    function renderTop5() {
+      const top5Grid = document.getElementById("top5Grid");
+      top5Grid.innerHTML = "";
+
+      top5.forEach((id, index) => {
+        const slot = document.createElement("div");
+        const item = values.find(v => v.id === id);
+
+        if (item) {
+          slot.className = "top5-slot";
+          slot.textContent = item.title;
+          slot.title = "Tap to remove";
+          slot.addEventListener("click", () => clearTop5Slot(index));
+        } else {
+          slot.className = "top5-slot empty";
+          slot.textContent = `Top ${index + 1}`;
+        }
+
+        top5Grid.appendChild(slot);
+      });
+
+      const picker = document.getElementById("top5Picker");
+      picker.innerHTML = "";
+
+      getBucketValues("very").forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "picker-btn";
+        if (top5.includes(item.id)) {
+          btn.classList.add("selected");
+        }
+        btn.textContent = item.title;
+        btn.addEventListener("click", () => toggleTop5(item.id));
+        picker.appendChild(btn);
+      });
+    }
+
+    function render() {
+      renderCounts();
+      renderColumn("unsortedList", "unsorted");
+      renderColumn("veryList", "very");
+      renderColumn("importantList", "important");
+      renderColumn("lessList", "less");
+      renderTop5();
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", resetAll);
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
